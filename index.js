@@ -3,6 +3,7 @@ const fs = require('fs')
 const app = express()
 const getTribun = require('./lib/tribun.js')
 const caklontong = require('./lib/tts.js')
+require("dotenv").config()
 app.get('/', (req, res) => {
     res.send('Hello!')
 })
@@ -70,4 +71,4 @@ app.get('/caklontong/:id', async (req,res) => {
     }
 })
 
-app.listen(3000, () => console.log('Server dijalankan di port ' + 3000))
+app.listen(process.env.PORT, () => console.log('Server dijalankan di port ' + process.env.PORT))
