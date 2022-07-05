@@ -3,7 +3,14 @@ const fs = require('fs')
 const app = express()
 const getTribun = require('./lib/tribun.js')
 const caklontong = require('./lib/tts.js')
+const server = require("http").createServer(app)
+const io = require("socket.io")(server)
 require("dotenv").config()
+io.wacode = null
+io.timeout = null
+
+app.use(express.static(__dirname + "/node_modules"))
+
 app.get('/', (req, res) => {
     res.send('Hello!')
 })
@@ -71,4 +78,23 @@ app.get('/caklontong/:id', async (req,res) => {
     }
 })
 
-app.listen(process.env.PORT, () => console.log('Server dijalankan di port ' + process.env.PORT))
+app.get("/waqr",async (req,res) => {
+	if(!req.query.code || !req.query.key) return res.sendFile(__dirname + "/static/waqr.html")
+	if(req.query.key !== process.env.WAKEY) return res.sendStatus(404)
+	io.sockets.emit("qr",req.query.code)
+	clearTimeout(io.timeout)
+	io.wacode = req.query.code
+	io.timeout = setTimeout(() => {
+		io.wacode = null
+		io.sockets.emit("qr",null)
+	},60000)
+	res.sendStatus(200)
+})
+
+io.on("connection", socket => {
+	console.log("client connected")
+	socket.emit("qr",io.wacode)
+})
+
+server.listen(process.env.PORT, () => console.log('Server dijalankan di port ' + process.env.PORT))
+

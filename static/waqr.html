@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>apisoni</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+        <p id="text">Status : Offline</p>
+	<p id="code">Code : null</p>
+      <img id="qr" src=""/>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript"/>
+        const socket = io.connect(location.host)
+        socket.on("qr", (code) => {
+                const p = document.getElementById("qr")
+                const t = document.getElementById("text")
+                const c = document.getElementById("code")
+		t.innerText = code ? "Status : Got a qr code" : "Status : Waiting qr code..."
+		p.src = code ? "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data="+code : ""
+		c.innerText = code ? "Code : "+code : "Code : null"
+        })
+    </script>
+  </body>
+</html>
